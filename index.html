@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Philadelphia Eagles Deep-Lore Trivia</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600;700&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        eagles: {
+                            green: '#004C54',
+                            darkGreen: '#002B30',
+                            accent: '#008651',
+                            silver: '#A5ACAF',
+                            gold: '#FFD700',
+                            charcoal: '#101820'
+                        }
+                    },
+                    fontFamily: {
+                        teko: ['Teko', 'sans-serif'],
+                        montserrat: ['Montserrat', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(0, 43, 48, 0.88);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(165, 172, 175, 0.35);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+        }
+        .stadium-bg {
+            background-image: linear-gradient(to bottom, rgba(0, 43, 48, 0.85), rgba(16, 24, 32, 0.95)), url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1000&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+    </style>
+</head>
+<body class="h-full font-montserrat text-slate-100 flex items-center justify-center p-2 sm:p-4 stadium-bg selection:bg-eagles-accent selection:text-white">
+
+    <!-- Mobile Frame Container -->
+    <div class="w-full max-w-md h-[94vh] max-h-[880px] bg-eagles-charcoal/90 rounded-[36px] border-4 border-slate-800 shadow-2xl flex flex-col overflow-hidden relative backdrop-blur-sm">
+
+        <!-- Top Status / Branding Bar -->
+        <header class="px-5 py-3.5 glass-panel border-b border-slate-700/50 flex items-center justify-between z-10">
+            <div class="flex items-center space-x-3">
+                <!-- Eagles Profile SVG Graphic -->
+                <svg class="w-10 h-10 drop-shadow-lg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 50 Q30 20 60 25 Q85 30 95 50 Q75 60 60 55 Q40 50 10 50 Z" fill="#004C54" stroke="#A5ACAF" stroke-width="2.5"/>
+                    <path d="M60 25 Q75 10 90 20 Q80 35 60 25 Z" fill="#008651"/>
+                    <path d="M75 45 Q88 48 98 42 Q92 58 75 50 Z" fill="#FFD700"/>
+                    <circle cx="68" cy="35" r="3" fill="#FFFFFF"/>
+                </svg>
+                <div>
+                    <h1 class="font-teko text-2xl tracking-wider text-white leading-none uppercase">Birds Deep Lore</h1>
+                    <p class="text-[10px] font-semibold text-eagles-silver uppercase tracking-widest">Daily Trivia & Friends League</p>
+                </div>
+            </div>
+
+            <!-- Header Action Buttons -->
+            <div class="flex items-center space-x-2">
+                <button onclick="toggleAudio()" id="audioBtn" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-eagles-silver hover:text-white transition" title="Toggle Sound">
+                    <svg id="audioIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"/>
+                    </svg>
+                </button>
+                <button onclick="resetDailyData()" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-amber-400 hover:text-white transition" title="Reset Today's Game (Test Mode)">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                </button>
+                <button onclick="showLeagueModal()" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-eagles-silver hover:text-white transition" title="League Leaderboard">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Viewport -->
+        <main id="appBody" class="flex-1 flex flex-col justify-between p-4 overflow-y-auto relative">
+            <!-- Dynamic Content Injected Here via JS -->
+        </main>
+
+        <!-- Dynamic Modal Backdrop -->
+        <div id="modalContainer" class="hidden absolute inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
+            <div id="modalContent" class="w-full glass-panel border border-slate-700 rounded-3xl p-5 shadow-2xl max-h-[90%] overflow-y-auto">
+                <!-- Modal content dynamically injected -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 1. DEEP LORE QUESTION DATABASE ---
+        const QUESTIONS_DB = [
+            {
+                q: "Before adopting 'Eagles' in 1933, what was Philadelphia's previous NFL franchise name under Bert Bell?",
+                opts: ["Frankford Yellow Jackets", "Philadelphia Quakers", "Philadelphia Bulldogs", "Pottsville Maroons"],
+                ans: 0,
+                fact: "Bert Bell and Lud Wray purchased the bankrupt Frankford Yellow Jackets assets in 1933 and renamed them the Eagles after FDR's National Recovery Administration symbol."
+            },
+            {
+                q: "During the 1943 World War II player shortage, the Eagles merged with which team to form the 'Steagles'?",
+                opts: ["Pittsburgh Steelers", "Washington Redskins", "Brooklyn Dodgers", "New York Giants"],
+                ans: 0,
+                fact: "The Phil-Pitt Steagles combined rosters in 1943 due to WW2 military draft shortages, finishing with a 5-4-1 record."
+            },
+            {
+                q: "Who was the legendary Eagles head coach who led the franchise to consecutive NFL Championship victories in 1948 and 1949?",
+                opts: ["Earle 'Greasy' Neale", "Bert Bell", "Buck Shaw", "Dick Vermeil"],
+                ans: 0,
+                fact: "Greasy Neale pioneered the 5-2 defense and swept the 1948 and 1949 championships in torrential weather."
+            },
+            {
+                q: "In the 1960 NFL Championship victory over Vince Lombardi's Green Bay Packers, who scored the game-winning touchdown for Philadelphia?",
+                opts: ["Ted Dean", "Tommy McDonald", "Chuck Bednarik", "Norm Van Brocklin"],
+                ans: 0,
+                fact: "Rookie fullback Ted Dean scored on a 5-yard run in the 4th quarter to seal the 17-13 victory, Lombardi's only career playoff loss."
+            },
+            {
+                q: "Hall of Famer Chuck Bednarik famously played every snap on both offense and defense in the 1960 title game. What two positions did he play?",
+                opts: ["Center & Linebacker", "Guard & Defensive Tackle", "Tight End & Safety", "Fullback & Cornerback"],
+                ans: 0,
+                fact: "Concrete Charlie was the last of the full-time 60-Minute Men in NFL history, starring at Center and Linebacker."
+            },
+            {
+                q: "What defensive coordinator designed the legendary 1991 Eagles defense that led the NFL in total yards, rushing yards, AND passing yards allowed?",
+                opts: ["Bud Carson", "Marion Campbell", "Jim Johnson", "Fritz Shurmur"],
+                ans: 0,
+                fact: "Bud Carson's 1991 defense achieved the rare defensive triple-crown despite quarterback Randall Cunningham missing the season with an ACL tear."
+            },
+            {
+                q: "During Super Bowl LII, what was the exact nickname of the trick play where Nick Foles caught a touchdown pass from Corey Clement & Trey Burton?",
+                opts: ["Philly Special", "Philly Philly", "Bird Surprise", "Keystone Shuffle"],
+                ans: 0,
+                fact: "Nick Foles asked Doug Pederson 'You want Philly Special?' on 4th-and-goal right before halftime against New England."
+            },
+            {
+                q: "Which Eagles defender made the game-clinching sack-fumble strip on Tom Brady with under 3 minutes remaining in Super Bowl LII?",
+                opts: ["Brandon Graham", "Fletcher Cox", "Derek Barnett", "Chris Long"],
+                ans: 0,
+                fact: "Brandon Graham beat Patriots guard Shaq Mason to strip Tom Brady, recovered by rookie Derek Barnett."
+            },
+            {
+                q: "Who holds the Eagles single-game record for most rushing yards in a single contest (217 yards vs. Detroit in 2013 Snow Bowl)?",
+                opts: ["LeSean McCoy", "Wilbert Montgomery", "Brian Westbrook", "Steve Van Buren"],
+                ans: 0,
+                fact: "LeSean 'Shady' McCoy rushed for 217 yards in 8 inches of snow against Detroit on Dec 8, 2013."
+            },
+            {
+                q: "In 1987, legendary defensive end Reggie White recorded how many sacks in just 12 games during the strike-shortened season?",
+                opts: ["21.0 Sacks", "18.5 Sacks", "22.5 Sacks", "19.0 Sacks"],
+                ans: 0,
+                fact: "Reggie White averaged 1.75 sacks per game in 1987, a mark never equaled in modern NFL history."
+            }
+        ];
+
+        // --- 2. AUDIO SYNTHESIZER ---
+        let audioCtx = null;
+        let audioMuted = false;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playSound(type) {
+            if (audioMuted) return;
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                const now = ctx.currentTime;
+
+                if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.1);
+                    osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.2);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(180, now);
+                    osc.frequency.linearRampToValueAtTime(110, now + 0.25);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'tick') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(800, now);
+                    gain.gain.setValueAtTime(0.05, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                }
+            } catch (e) { console.log('Audio init skipped'); }
+        }
+
+        function toggleAudio() {
+            audioMuted = !audioMuted;
+            document.getElementById('audioBtn').classList.toggle('text-eagles-accent', !audioMuted);
+            document.getElementById('audioBtn').classList.toggle('text-rose-500', audioMuted);
+        }
+
+        // --- 3. STATE & STORAGE MANAGEMENT ---
+        let playerStats = JSON.parse(localStorage.getItem('eagles_trivia_stats')) || {
+            streak: 0,
+            bestStreak: 0,
+            played: 0,
+            correct: 0,
+            lastPlayedDate: null,
+            dailyResults: {}
+        };
+
+        let leagueMembers = JSON.parse(localStorage.getItem('eagles_league_members')) || [
+            { name: "You", streak: playerStats.streak, today: "Pending" }
+        ];
+
+        let timerInterval = null;
+        let secondsLeft = 20;
+        let activeCorrectIndex = 0;
+
+        function getTodayKey() {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        }
+
+        function getDailyQuestionIndex() {
+            const today = getTodayKey();
+            let hash = 0;
+            for (let i = 0; i < today.length; i++) {
+                hash = (hash << 5) - hash + today.charCodeAt(i);
+                hash |= 0;
+            }
+            return Math.abs(hash) % QUESTIONS_DB.length;
+        }
+
+        function getShuffledOptions(q, todayKey) {
+            let seed = 0;
+            for (let i = 0; i < todayKey.length; i++) {
+                seed += todayKey.charCodeAt(i);
+            }
+            const options = q.opts.map((opt, idx) => ({ text: opt, isCorrect: idx === q.ans }));
+            
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = (seed * (i + 1)) % (i + 1);
+                const temp = options[i];
+                options[i] = options[j];
+                options[j] = temp;
+            }
+            return options;
+        }
+
+        function resetDailyData() {
+            const todayKey = getTodayKey();
+            delete playerStats.dailyResults[todayKey];
+            localStorage.setItem('eagles_trivia_stats', JSON.stringify(playerStats));
+            renderHome();
+        }
+
+        // --- 4. RENDER VIEWS ---
+        function renderHome() {
+            const todayKey = getTodayKey();
+            const hasPlayedToday = playerStats.dailyResults[todayKey] !== undefined;
+            const qIdx = getDailyQuestionIndex();
+            const q = QUESTIONS_DB[qIdx];
+
+            const body = document.getElementById('appBody');
+
+            // STEP 2 & 3: IF ALREADY ANSWERED, SHOW SUMMARY & SPOILER-FREE SHARING
+            if (hasPlayedToday) {
+                const result = playerStats.dailyResults[todayKey];
+                const correctAnswerText = q.opts[q.ans];
+
+                body.innerHTML = `
+                    <div class="flex-1 flex flex-col justify-between items-center text-center py-2">
+                        <!-- Top Banner Result Card -->
+                        <div class="w-full glass-panel p-4 rounded-3xl border border-eagles-accent/40 shadow-xl relative overflow-hidden">
+                            <div class="w-16 h-16 mx-auto rounded-full ${result.correct ? 'bg-eagles-accent/20 border-2 border-eagles-accent' : 'bg-rose-500/20 border-2 border-rose-500'} flex items-center justify-center mb-2 shadow-lg">
+                                ${result.correct ? 
+                                    `<svg class="w-8 h-8 text-eagles-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>` :
+                                    `<svg class="w-8 h-8 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>`
+                                }
+                            </div>
+
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-eagles-silver">Daily Drive Complete</span>
+                            <h2 class="font-teko text-3xl text-white uppercase tracking-wide leading-none mt-0.5">
+                                ${result.correct ? 'TOUCHDOWN!' : 'TURNOVER ON DOWNS'}
+                            </h2>
+
+                            <!-- Correct Answer Box (Shown ONLY AFTER user submits an answer) -->
+                            <div class="mt-3 p-3 rounded-2xl ${result.correct ? 'bg-eagles-green/30 border border-eagles-accent/50' : 'bg-rose-950/40 border border-rose-500/50'} text-left">
+                                <p class="text-[10px] uppercase font-bold text-eagles-silver">Correct Answer:</p>
+                                <p class="text-sm font-bold text-eagles-gold mt-0.5">✔ ${correctAnswerText}</p>
+                                <p class="text-xs text-slate-300 mt-1.5 leading-relaxed font-medium border-t border-slate-700/50 pt-1.5">${q.fact}</p>
+                            </div>
+                        </div>
+
+                        <!-- Stats Grid -->
+                        <div class="grid grid-cols-3 gap-2.5 w-full my-3">
+                            <div class="glass-panel p-2.5 rounded-2xl text-center border-l-2 border-eagles-gold">
+                                <p class="text-[9px] text-eagles-silver font-bold uppercase">Current Streak</p>
+                                <p class="font-teko text-2xl text-eagles-gold leading-none mt-0.5">${playerStats.streak} 🔥</p>
+                            </div>
+                            <div class="glass-panel p-2.5 rounded-2xl text-center border-l-2 border-eagles-silver">
+                                <p class="text-[9px] text-eagles-silver font-bold uppercase">Best Streak</p>
+                                <p class="font-teko text-2xl text-white leading-none mt-0.5">${playerStats.bestStreak}</p>
+                            </div>
+                            <div class="glass-panel p-2.5 rounded-2xl text-center border-l-2 border-eagles-accent">
+                                <p class="text-[9px] text-eagles-silver font-bold uppercase">Accuracy</p>
+                                <p class="font-teko text-2xl text-eagles-accent leading-none mt-0.5">${playerStats.played ? Math.round((playerStats.correct / playerStats.played) * 100) : 0}%</p>
+                            </div>
+                        </div>
+
+                        <!-- Spoiler-Free Text Sharing Buttons -->
+                        <div class="w-full space-y-2">
+                            <button onclick="shareResultNative()" class="w-full py-3 bg-gradient-to-r from-eagles-accent via-eagles-green to-eagles-darkGreen hover:brightness-110 active:scale-[0.98] text-white font-bold rounded-2xl shadow-xl flex items-center justify-center space-x-2 transition border border-eagles-accent/40">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                <span class="text-sm">Share Result via Text (Spoiler-Free)</span>
+                            </button>
+
+                            <button onclick="copyResultText()" class="w-full py-2.5 bg-slate-800/80 hover:bg-slate-700 text-eagles-silver font-semibold rounded-2xl transition border border-slate-700 text-xs flex items-center justify-center space-x-1.5">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                <span>Copy Text to Clipboard</span>
+                            </button>
+
+                            <button onclick="showLeagueModal()" class="w-full py-2.5 bg-slate-900/80 hover:bg-slate-800 text-slate-300 font-semibold rounded-2xl transition border border-slate-800 text-xs">
+                                View Family League Leaderboard
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // STEP 1: INITIAL QUESTION DISPLAY WITH MULTIPLE CHOICE & TIMER
+                const shuffledOpts = getShuffledOptions(q, todayKey);
+                activeCorrectIndex = shuffledOpts.findIndex(o => o.isCorrect);
+
+                body.innerHTML = `
+                    <div class="flex-1 flex flex-col justify-between py-1">
+                        <!-- Top 20-Second Countdown Timer -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold uppercase tracking-wider text-eagles-silver">Daily Eagle Challenge</span>
+                                <span id="timerDisplay" class="font-teko text-2xl text-eagles-gold font-bold">20s</span>
+                            </div>
+                            <div class="w-full h-2.5 bg-slate-800/90 rounded-full overflow-hidden p-0.5 border border-slate-700">
+                                <div id="timerBar" class="h-full bg-gradient-to-r from-eagles-accent via-eagles-green to-eagles-gold rounded-full w-full transition-all duration-1000 shadow-md"></div>
+                            </div>
+                        </div>
+
+                        <!-- Question Prompt -->
+                        <div class="glass-panel p-4 rounded-3xl border border-eagles-accent/30 my-3 relative overflow-hidden">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <span class="px-2.5 py-1 bg-eagles-green/60 border border-eagles-accent rounded-full text-[10px] font-bold text-white uppercase tracking-wider">Deep Franchise History</span>
+                            </div>
+                            <h2 class="font-montserrat text-base font-bold text-white leading-snug">
+                                "${q.q}"
+                            </h2>
+                        </div>
+
+                        <!-- Multiple Choice Option Buttons (A, B, C, D) -->
+                        <div id="optionsContainer" class="space-y-2.5">
+                            ${shuffledOpts.map((optObj, idx) => `
+                                <button id="opt-${idx}" onclick="submitAnswer(${idx})" class="w-full p-3.5 glass-panel hover:bg-eagles-green/50 active:scale-[0.98] border border-slate-700/80 hover:border-eagles-accent rounded-2xl text-left text-sm font-semibold text-slate-100 transition flex items-center justify-between shadow-md">
+                                    <span>${optObj.text}</span>
+                                    <span class="w-6 h-6 rounded-full bg-slate-800/80 border border-slate-600 flex items-center justify-center text-xs font-bold text-eagles-gold">${String.fromCharCode(65 + idx)}</span>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                startTimer();
+            }
+        }
+
+        // --- 5. TIMER & GAMEPLAY ENGINE ---
+        function startTimer() {
+            clearInterval(timerInterval);
+            secondsLeft = 20;
+            const timerDisplay = document.getElementById('timerDisplay');
+            const timerBar = document.getElementById('timerBar');
+
+            timerInterval = setInterval(() => {
+                secondsLeft--;
+                if (timerDisplay) timerDisplay.textContent = `${secondsLeft}s`;
+                if (timerBar) timerBar.style.width = `${(secondsLeft / 20) * 100}%`;
+
+                if (secondsLeft <= 5 && secondsLeft > 0) {
+                    playSound('tick');
+                }
+
+                if (secondsLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitAnswer(-1); // Timeout treated as wrong
+                }
+            }, 1000);
+        }
+
+        // STEP 2: USER SELECTS AN ANSWER -> FEEDBACK HIGHLIGHT -> SHOW RESULT
+        function submitAnswer(chosenIdx) {
+            clearInterval(timerInterval);
+            const todayKey = getTodayKey();
+            const qIdx = getDailyQuestionIndex();
+            const q = QUESTIONS_DB[qIdx];
+
+            const isCorrect = chosenIdx === activeCorrectIndex;
+
+            // Highlight chosen & correct choices immediately on button click
+            const optionsContainer = document.getElementById('optionsContainer');
+            if (optionsContainer) {
+                const buttons = optionsContainer.getElementsByTagName('button');
+                for (let i = 0; i < buttons.length; i++) {
+                    buttons[i].disabled = true;
+                    if (i === activeCorrectIndex) {
+                        buttons[i].classList.remove('glass-panel', 'border-slate-700/80');
+                        buttons[i].classList.add('bg-eagles-accent', 'border-white', 'text-white');
+                    } else if (i === chosenIdx && !isCorrect) {
+                        buttons[i].classList.remove('glass-panel', 'border-slate-700/80');
+                        buttons[i].classList.add('bg-rose-600', 'border-rose-400', 'text-white');
+                    }
+                }
+            }
+
+            if (isCorrect) {
+                playSound('correct');
+                playerStats.streak++;
+                playerStats.correct++;
+                if (playerStats.streak > playerStats.bestStreak) {
+                    playerStats.bestStreak = playerStats.streak;
+                }
+            } else {
+                playSound('wrong');
+                playerStats.streak = 0;
+                const container = document.getElementById('appBody');
+                if (container) container.classList.add('animate-shake');
+            }
+
+            playerStats.played++;
+            playerStats.dailyResults[todayKey] = {
+                correct: isCorrect,
+                seconds: 20 - secondsLeft,
+                chosen: chosenIdx
+            };
+            playerStats.lastPlayedDate = todayKey;
+
+            localStorage.setItem('eagles_trivia_stats', JSON.stringify(playerStats));
+
+            // Wait 1.2 seconds so user sees if they were correct/wrong before moving to summary screen
+            setTimeout(() => {
+                renderHome();
+            }, 1200);
+        }
+
+        // STEP 3: SPOILER-FREE MESSENGER / TEXT SHARING (NO ANSWER REVEALED)
+        function getFormattedSharePayload() {
+            const todayKey = getTodayKey();
+            const res = playerStats.dailyResults[todayKey];
+            const resultIcon = res.correct ? '🟢 TOUCHDOWN!' : '🔴 TURNOVER';
+            const pageUrl = window.location.href;
+
+            // The generated text only contains emojis, time, streak, and app link! NO ANSWER TEXT IS SHOWN.
+            return {
+                title: 'Eagles Trivia Daily Drive',
+                text: `🦅 Birds Deep Lore Daily (${todayKey})
+Drive Result: ${resultIcon} (${res.seconds}s)
+Current Streak: ${playerStats.streak} 🔥
+
+Can you beat my score? Play today's question here:
+${pageUrl}`
+            };
+        }
+
+        function shareResultNative() {
+            const payload = getFormattedSharePayload();
+
+            if (navigator.share) {
+                navigator.share({
+                    title: payload.title,
+                    text: payload.text
+                }).catch((err) => {
+                    console.log('Share prompt dismissed');
+                });
+            } else {
+                copyResultText();
+            }
+        }
+
+        function copyResultText() {
+            const payload = getFormattedSharePayload();
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(payload.text);
+                alert("Spoiler-free result copied to clipboard! You can paste it in any text message or group chat.");
+            } else {
+                alert(payload.text);
+            }
+        }
+
+        // --- 7. FAMILY & FRIENDS LEAGUE LEADERBOARD SYSTEM ---
+        function showLeagueModal() {
+            const modal = document.getElementById('modalContainer');
+            const content = document.getElementById('modalContent');
+
+            const todayKey = getTodayKey();
+            const todayRes = playerStats.dailyResults[todayKey];
+            const userPayload = btoa(JSON.stringify({
+                name: "Player_" + Math.floor(1000 + Math.random() * 9000),
+                streak: playerStats.streak,
+                today: todayRes ? (todayRes.correct ? 'Correct' : 'Incorrect') : 'Pending'
+            }));
+
+            content.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+                        <h3 class="font-teko text-3xl text-white uppercase tracking-wider leading-none">Family & Friends League</h3>
+                        <button onclick="closeModal()" class="text-slate-400 hover:text-white text-xl">✕</button>
+                    </div>
+
+                    <div class="glass-panel p-3.5 rounded-2xl space-y-2">
+                        <p class="text-xs font-semibold text-eagles-silver uppercase">Sync With Friends</p>
+                        <p class="text-[11px] text-slate-300">Copy your League Sync Code to let friends add your live stats to their leaderboard:</p>
+                        <div class="flex space-x-2">
+                            <input type="text" readonly value="${userPayload}" id="syncCodeInput" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-eagles-accent flex-1 overflow-hidden">
+                            <button onclick="copySyncCode()" class="px-3 py-2 bg-eagles-accent text-white font-bold rounded-xl text-xs hover:bg-eagles-green transition">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-3.5 rounded-2xl space-y-2">
+                        <p class="text-xs font-semibold text-eagles-silver uppercase">Add Friend's Code</p>
+                        <div class="flex space-x-2">
+                            <input type="text" placeholder="Paste friend's code here..." id="addFriendInput" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-white flex-1">
+                            <button onclick="addFriendCode()" class="px-3 py-2 bg-slate-800 text-eagles-silver font-bold rounded-xl text-xs hover:bg-slate-700 transition">Add</button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <p class="text-xs font-semibold text-eagles-silver uppercase">Live Standings</p>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between p-3 glass-panel border-l-4 border-eagles-gold rounded-xl">
+                                <div>
+                                    <p class="text-sm font-bold text-white">You (Local)</p>
+                                    <p class="text-[10px] text-eagles-silver">Daily Drive: ${todayRes ? (todayRes.correct ? '🟢 Correct' : '🔴 Turnover') : '⏳ Pending'}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-teko text-xl text-eagles-gold">${playerStats.streak} 🔥</p>
+                                </div>
+                            </div>
+
+                            ${leagueMembers.filter(m => m.name !== 'You').map(m => `
+                                <div class="flex items-center justify-between p-3 glass-panel border border-slate-800 rounded-xl">
+                                    <div>
+                                        <p class="text-sm font-bold text-white">${m.name}</p>
+                                        <p class="text-[10px] text-eagles-silver">Daily Drive: ${m.today}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-teko text-xl text-white">${m.streak} 🔥</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modalContainer').classList.add('hidden');
+        }
+
+        function copySyncCode() {
+            const input = document.getElementById('syncCodeInput');
+            input.select();
+            navigator.clipboard.writeText(input.value);
+            alert("League Sync Code copied!");
+        }
+
+        function addFriendCode() {
+            const raw = document.getElementById('addFriendInput').value.trim();
+            if (!raw) return;
+            try {
+                const decoded = JSON.parse(atob(raw));
+                if (decoded && decoded.name) {
+                    leagueMembers.push(decoded);
+                    localStorage.setItem('eagles_league_members', JSON.stringify(leagueMembers));
+                    showLeagueModal();
+                }
+            } catch (e) {
+                alert("Invalid sync code format.");
+            }
+        }
+
+        // --- 8. INITIALIZATION ---
+        window.addEventListener('DOMContentLoaded', () => {
+            renderHome();
+        });
+    </script>
+</body>
+</html>
