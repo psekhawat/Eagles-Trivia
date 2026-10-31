@@ -1,6 +1,6 @@
 # Philadelphia Eagles Deep-Lore Trivia App 🦅
 
-A high-difficulty, daily Philadelphia Eagles trivia game with a 20-second timer, multiple-choice buttons, post-selection feedback, spoiler-free text message sharing, offline audio synthesis, streak tracking, and zero-backend family/friends league leaderboards. Hostable on **GitHub Pages** without any API keys or servers.
+A high-difficulty, daily Philadelphia Eagles trivia game featuring a nickname welcome screen, 20-second timer, multiple choice options, post-selection feedback, spoiler-free text message sharing, offline audio synthesis, streak tracking, and zero-backend family/friends league leaderboards. Hostable on **GitHub Pages** without any API keys or servers.
 
 ---
 

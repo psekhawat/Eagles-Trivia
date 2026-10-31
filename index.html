@@ -69,7 +69,7 @@
                 </svg>
                 <div>
                     <h1 class="font-teko text-2xl tracking-wider text-white leading-none uppercase">Birds Deep Lore</h1>
-                    <p class="text-[10px] font-semibold text-eagles-silver uppercase tracking-widest">Daily Trivia & Friends League</p>
+                    <p id="headerNickname" class="text-[10px] font-semibold text-eagles-silver uppercase tracking-widest">Daily Trivia & Friends League</p>
                 </div>
             </div>
 
@@ -231,8 +231,9 @@
             document.getElementById('audioBtn').classList.toggle('text-rose-500', audioMuted);
         }
 
-        // --- 3. STATE & STORAGE MANAGEMENT ---
+        // --- 3. STATE & USER NICKNAME STORAGE ---
         let playerStats = JSON.parse(localStorage.getItem('eagles_trivia_stats')) || {
+            nickname: "",
             streak: 0,
             bestStreak: 0,
             played: 0,
@@ -241,9 +242,7 @@
             dailyResults: {}
         };
 
-        let leagueMembers = JSON.parse(localStorage.getItem('eagles_league_members')) || [
-            { name: "You", streak: playerStats.streak, today: "Pending" }
-        ];
+        let leagueMembers = JSON.parse(localStorage.getItem('eagles_league_members')) || [];
 
         let timerInterval = null;
         let secondsLeft = 20;
@@ -287,8 +286,55 @@
             renderHome();
         }
 
-        // --- 4. RENDER VIEWS ---
+        // --- NICKNAME WELCOME SCREEN ---
+        function renderNicknamePrompt() {
+            const body = document.getElementById('appBody');
+            body.innerHTML = `
+                <div class="flex-1 flex flex-col justify-center items-center text-center p-2">
+                    <div class="w-full glass-panel p-6 rounded-3xl border border-eagles-accent/40 shadow-2xl space-y-5">
+                        <div class="w-16 h-16 mx-auto rounded-full bg-eagles-accent/20 border-2 border-eagles-accent flex items-center justify-center">
+                            <svg class="w-8 h-8 text-eagles-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-widest text-eagles-silver">Welcome to Birds Deep Lore</span>
+                            <h2 class="font-teko text-3xl text-white uppercase tracking-wide leading-none mt-1">Enter Your Nickname</h2>
+                            <p class="text-xs text-slate-300 mt-2">Enter a nickname to track your daily streak and share score updates with your friends & family league!</p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <input type="text" id="nicknameInput" maxlength="15" placeholder="e.g. PhillyFan99" class="w-full bg-slate-900 border border-slate-700 focus:border-eagles-accent rounded-2xl px-4 py-3 text-center text-white font-bold text-base outline-none transition">
+                            <button onclick="saveNickname()" class="w-full py-3.5 bg-gradient-to-r from-eagles-accent via-eagles-green to-eagles-darkGreen hover:brightness-110 active:scale-[0.98] text-white font-bold rounded-2xl shadow-xl transition border border-eagles-accent/40">
+                                Enter Game
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function saveNickname() {
+            const input = document.getElementById('nicknameInput');
+            const val = input ? input.value.trim() : '';
+            if (!val) {
+                alert("Please enter a nickname to continue!");
+                return;
+            }
+            playerStats.nickname = val;
+            localStorage.setItem('eagles_trivia_stats', JSON.stringify(playerStats));
+            renderHome();
+        }
+
+        // --- 4. RENDER MAIN VIEWS ---
         function renderHome() {
+            // STEP 0: IF NO NICKNAME, SHOW NICKNAME SCREEN FIRST
+            if (!playerStats.nickname) {
+                renderNicknamePrompt();
+                return;
+            }
+
+            const headerNick = document.getElementById('headerNickname');
+            if (headerNick) headerNick.textContent = `Player: ${playerStats.nickname}`;
+
             const todayKey = getTodayKey();
             const hasPlayedToday = playerStats.dailyResults[todayKey] !== undefined;
             const qIdx = getDailyQuestionIndex();
@@ -296,7 +342,7 @@
 
             const body = document.getElementById('appBody');
 
-            // STEP 2 & 3: IF ALREADY ANSWERED, SHOW SUMMARY & SPOILER-FREE SHARING
+            // STEP 2 & 3: IF ALREADY ANSWERED TODAY, SHOW SUMMARY & SPOILER-FREE SHARING
             if (hasPlayedToday) {
                 const result = playerStats.dailyResults[todayKey];
                 const correctAnswerText = q.opts[q.ans];
@@ -420,12 +466,11 @@
 
                 if (secondsLeft <= 0) {
                     clearInterval(timerInterval);
-                    submitAnswer(-1); // Timeout treated as wrong
+                    submitAnswer(-1);
                 }
             }, 1000);
         }
 
-        // STEP 2: USER SELECTS AN ANSWER -> FEEDBACK HIGHLIGHT -> SHOW RESULT
         function submitAnswer(chosenIdx) {
             clearInterval(timerInterval);
             const todayKey = getTodayKey();
@@ -434,7 +479,6 @@
 
             const isCorrect = chosenIdx === activeCorrectIndex;
 
-            // Highlight chosen & correct choices immediately on button click
             const optionsContainer = document.getElementById('optionsContainer');
             if (optionsContainer) {
                 const buttons = optionsContainer.getElementsByTagName('button');
@@ -474,23 +518,23 @@
 
             localStorage.setItem('eagles_trivia_stats', JSON.stringify(playerStats));
 
-            // Wait 1.2 seconds so user sees if they were correct/wrong before moving to summary screen
             setTimeout(() => {
                 renderHome();
             }, 1200);
         }
 
-        // STEP 3: SPOILER-FREE MESSENGER / TEXT SHARING (NO ANSWER REVEALED)
+        // --- 6. SPOILER-FREE MESSENGER PHONE SHARING SYSTEM ---
         function getFormattedSharePayload() {
             const todayKey = getTodayKey();
             const res = playerStats.dailyResults[todayKey];
             const resultIcon = res.correct ? '🟢 TOUCHDOWN!' : '🔴 TURNOVER';
             const pageUrl = window.location.href;
+            const nick = playerStats.nickname || 'Eagles Fan';
 
-            // The generated text only contains emojis, time, streak, and app link! NO ANSWER TEXT IS SHOWN.
             return {
                 title: 'Eagles Trivia Daily Drive',
                 text: `🦅 Birds Deep Lore Daily (${todayKey})
+Player: ${nick}
 Drive Result: ${resultIcon} (${res.seconds}s)
 Current Streak: ${playerStats.streak} 🔥
 
@@ -532,7 +576,7 @@ ${pageUrl}`
             const todayKey = getTodayKey();
             const todayRes = playerStats.dailyResults[todayKey];
             const userPayload = btoa(JSON.stringify({
-                name: "Player_" + Math.floor(1000 + Math.random() * 9000),
+                name: playerStats.nickname || 'Player',
                 streak: playerStats.streak,
                 today: todayRes ? (todayRes.correct ? 'Correct' : 'Incorrect') : 'Pending'
             }));
@@ -566,7 +610,7 @@ ${pageUrl}`
                         <div class="space-y-2">
                             <div class="flex items-center justify-between p-3 glass-panel border-l-4 border-eagles-gold rounded-xl">
                                 <div>
-                                    <p class="text-sm font-bold text-white">You (Local)</p>
+                                    <p class="text-sm font-bold text-white">${playerStats.nickname || 'You'} (Local)</p>
                                     <p class="text-[10px] text-eagles-silver">Daily Drive: ${todayRes ? (todayRes.correct ? '🟢 Correct' : '🔴 Turnover') : '⏳ Pending'}</p>
                                 </div>
                                 <div class="text-right">
@@ -574,7 +618,7 @@ ${pageUrl}`
                                 </div>
                             </div>
 
-                            ${leagueMembers.filter(m => m.name !== 'You').map(m => `
+                            ${leagueMembers.map(m => `
                                 <div class="flex items-center justify-between p-3 glass-panel border border-slate-800 rounded-xl">
                                     <div>
                                         <p class="text-sm font-bold text-white">${m.name}</p>
